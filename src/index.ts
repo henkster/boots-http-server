@@ -1,11 +1,8 @@
-import express, { type Request, type Response } from "express";
+import express from "express";
+import { handlerReadiness } from "./handlerReadiness.js";
 
 const app = express();
 const PORT = 8080;
-const handlerReadiness = ( req: Request, res: Response) => {
-  res.set("Content-Type", "text/plain; charset=utf-8");
-  res.send("OK");
-}
 
 app.use("/app", express.static("./src/app"));
 
