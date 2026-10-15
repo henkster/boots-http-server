@@ -1,8 +1,11 @@
 import express from "express";
 import { handlerReadiness } from "./handlerReadiness.js";
+import { middlewareLogResponses } from "./middleware/logResponses.js";
 
 const app = express();
 const PORT = 8080;
+
+app.use(middlewareLogResponses);
 
 app.use("/app", express.static("./src/app"));
 
