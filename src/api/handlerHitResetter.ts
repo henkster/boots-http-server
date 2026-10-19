@@ -1,5 +1,5 @@
 import { type Request, type Response } from "express";
-import { config } from "./config.js";
+import { config } from "../config.js";
 
 export async function handlerHitResetter(_: Request, res: Response) {
   config.fileserverHits = 0;
