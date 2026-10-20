@@ -12,8 +12,6 @@ export async function handlerChirpValidator(req: Request, res: Response) {
         try {
             const parsedBody = JSON.parse(body);
 
-            res.status(200);
-
             if (parsedBody.body.length <= 140) {
                 res.status(200);
                 messageObj = { valid: true };
