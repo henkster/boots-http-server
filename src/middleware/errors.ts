@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { BadRequesError } from "../errors.js";
+import { BadRequesError } from "../api/errors.js";
 
 export function errorHandler(
   err: Error, // JS built-in interface

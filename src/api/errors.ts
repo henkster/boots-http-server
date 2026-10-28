@@ -11,8 +11,8 @@ export class AuthenticationError extends Error {
 }
 
 export class AuthorizationError extends Error {
-  constructor() {
-    super("User not authorized");
+  constructor(message: string) {
+    super(message ?? "User not authorized");
   }
 }
 

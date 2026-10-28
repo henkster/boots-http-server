@@ -1,11 +1,12 @@
 import express from "express";
-import { handlerReadiness } from "./api/handlerReadiness.js";
-import { handlerHitWriter } from "./api/handlerHitWriter.js";
+import { handlerReadiness } from "./api/readiness.js";
+import { handlerHitWriter } from "./api/hitWriter.js";
 import { middlewareLogResponses } from "./middleware/logResponses.js";
 import { middlewareHitIncrementer } from "./middleware/hitIncrementer.js";
-import { handlerHitResetter } from "./api/handlerHitResetter.js";
+import { handlerResetter } from "./api/resetter.js";
 import { handlerChirpValidator } from "./api/chirps.js";
 import { errorHandler } from "./middleware/errors.js";
+import { handlerCreateUser } from "./api/users.js";
 
 import { config } from "./config.js";
 import postgres from "postgres";
@@ -25,7 +26,8 @@ app.use("/app", middlewareHitIncrementer, express.static("./src/app"));
 
 app.get("/api/healthz", handlerReadiness);
 app.get("/admin/metrics", handlerHitWriter);
-app.post("/admin/reset", handlerHitResetter);
+app.post("/api/users", handlerCreateUser);
+app.post("/admin/reset", handlerResetter);
 app.post("/api/validate_chirp", handlerChirpValidator);
 
 app.use(errorHandler);

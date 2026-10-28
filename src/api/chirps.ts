@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { replace_profanity } from "./profanityChecker.js";
-import { BadRequesError } from "../errors.js";
+import { BadRequesError } from "./errors.js";
 
 export async function handlerChirpValidator(req: Request, res: Response) {
   type parameters ={
