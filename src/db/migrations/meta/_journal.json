@@ -15,6 +15,13 @@
       "when": 1793301034030,
       "tag": "0001_quick_bishop",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793376712812,
+      "tag": "0002_dazzling_scorpion",
+      "breakpoints": true
     }
   ]
 }

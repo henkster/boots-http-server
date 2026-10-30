@@ -12,6 +12,7 @@ import { config } from "./config.js";
 import postgres from "postgres";
 import { migrate } from "drizzle-orm/postgres-js/migrator";
 import { drizzle } from "drizzle-orm/postgres-js";
+import { handlerLogin } from "./api/security.js";
 
 const app = express();
 const PORT = 8080;
@@ -26,11 +27,12 @@ app.use("/app", middlewareHitIncrementer, express.static("./src/app"));
 
 app.get("/api/healthz", handlerReadiness);
 app.get("/admin/metrics", handlerHitWriter);
+app.post("/admin/reset", handlerResetter);
+app.post("/api/login", handlerLogin);
 app.post("/api/users", handlerCreateUser);
 app.get("/api/chirps/:id", handlerGetChirp);
 app.get("/api/chirps", handlerGetAllChirps);
 app.post("/api/chirps", handlerCreateChirp);
-app.post("/admin/reset", handlerResetter);
 
 app.use(errorHandler);
 
