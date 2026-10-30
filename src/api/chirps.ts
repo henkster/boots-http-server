@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { replace_profanity } from "./profanityChecker.js";
 import { BadRequesError } from "./errors.js";
-import { createChirp } from "../db/queries/chirps.js";
+import { createChirp, getAllChirps } from "../db/queries/chirps.js";
 
 export async function handlerCreateChirp(req: Request, res: Response) {
   type parameters ={
@@ -21,4 +21,12 @@ export async function handlerCreateChirp(req: Request, res: Response) {
   } else {
     throw new BadRequesError(`Chirp is too long. Max length is ${maxChirpLength}`);
   }
+}
+
+export async function handlerGetAllChirps(req: Request, res: Response) {
+
+  const chirps = await getAllChirps();
+  
+  res.status(200);
+  res.send(JSON.stringify(chirps));
 }
