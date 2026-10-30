@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { makeJWT, validateJWT } from "./auth.js";
+import { extractBearerToken, makeJWT, validateJWT } from "./auth.js";
 import { hashPassword, checkPasswordHash } from "./auth.js";
-import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
-import { AuthenticationError } from "../api/errors.js";
+import { AuthenticationError, BadRequestError } from "../api/errors.js";
 
 describe("Password Hashing", () => {
   const password1 = "correctPassword123!";
@@ -48,4 +47,33 @@ describe("JWT creation and validation", () => {
     jwtString = makeJWT(userId, 0, rightSecret);
     expect(() => validateJWT(jwtString, rightSecret)).toThrow(AuthenticationError);
   });
-})
+});
+
+describe("Bearer Extraction", () => {
+  it("should return simple token string", async () => {
+    const result = extractBearerToken("Bearer 123");
+    expect(result).toBe("123");
+  });
+
+  it("should throw bad request error on empty string", async () => {
+    expect(() => extractBearerToken("")).toThrow(BadRequestError);
+  });
+
+  it("should throw bad request error on missing token", async () => {
+    expect(() => extractBearerToken("Bearer")).toThrow(BadRequestError);
+  });
+
+  it("should throw bad request error on missing Bearer", async () => {
+    expect(() => extractBearerToken("123")).toThrow(BadRequestError);
+  });
+
+  it("should return token string despite spaces", async () => {
+    const result = extractBearerToken(" Bearer    123  ");
+    expect(result).toBe("123");
+  });
+
+  it("should return token string despite casing", async () => {
+    const result = extractBearerToken("beAReR 123");
+    expect(result).toBe("123");
+  });
+});

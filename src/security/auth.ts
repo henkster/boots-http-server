@@ -1,7 +1,7 @@
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import type { JwtPayload } from "jsonwebtoken";
-import { AuthenticationError } from "../api/errors.js";
+import { AuthenticationError, BadRequestError } from "../api/errors.js";
 
 function hashPassword(password: string): Promise<string> {
   return argon2.hash(password);
@@ -49,9 +49,30 @@ function validateJWT(tokenString: string, secret: string): string {
   }
 }
 
+function extractBearerToken(authorization: string | undefined): string {
+  if (authorization === undefined) {
+    throw new BadRequestError("empty authorization header");
+  }
+
+  const [bearerPrefix, tokenString] = authorization.trim().split(/\s+/);
+
+  if (bearerPrefix.toLocaleLowerCase().indexOf("bearer") === -1) {
+    throw new BadRequestError("authorization requires Bearer scheme");
+  }
+
+  const trimmedTokenString = tokenString?.trim();
+  
+  if (!trimmedTokenString) {
+    throw new BadRequestError("authorization missing token");
+  }
+
+  return trimmedTokenString;
+}
+
 export {
   hashPassword,
   checkPasswordHash,
   makeJWT,
   validateJWT,
+  extractBearerToken,
 }
