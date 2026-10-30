@@ -4,7 +4,7 @@ import { handlerHitWriter } from "./api/hitWriter.js";
 import { middlewareLogResponses } from "./middleware/logResponses.js";
 import { middlewareHitIncrementer } from "./middleware/hitIncrementer.js";
 import { handlerResetter } from "./api/resetter.js";
-import { handlerChirpValidator } from "./api/chirps.js";
+import { handlerCreateChirp } from "./api/chirps.js";
 import { errorHandler } from "./middleware/errors.js";
 import { handlerCreateUser } from "./api/users.js";
 
@@ -27,8 +27,8 @@ app.use("/app", middlewareHitIncrementer, express.static("./src/app"));
 app.get("/api/healthz", handlerReadiness);
 app.get("/admin/metrics", handlerHitWriter);
 app.post("/api/users", handlerCreateUser);
+app.post("/api/chirps", handlerCreateChirp);
 app.post("/admin/reset", handlerResetter);
-app.post("/api/validate_chirp", handlerChirpValidator);
 
 app.use(errorHandler);
 

@@ -1,6 +1,5 @@
 import { type Request, type Response } from "express";
 import { createUser } from "../db/queries/users.js";
-import { NewUser, } from "../db/schema.js";
 
 export async function handlerCreateUser(req: Request, res: Response) {
   type parameters ={
