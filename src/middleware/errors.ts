@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { BadRequesError } from "../api/errors.js";
+import { BadRequesError, NotFoundError } from "../api/errors.js";
 
 export function errorHandler(
   err: Error, // JS built-in interface
@@ -10,6 +10,11 @@ export function errorHandler(
   console.error(`An error occurred: ${err}`);
   if (err instanceof BadRequesError) {
     res.status(400);
+    res.json({
+        error: err.message
+    });
+  } else if (err instanceof NotFoundError) {
+    res.status(404);
     res.json({
         error: err.message
     });

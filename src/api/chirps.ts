@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { replace_profanity } from "./profanityChecker.js";
-import { BadRequesError } from "./errors.js";
-import { createChirp, getAllChirps } from "../db/queries/chirps.js";
+import { BadRequesError, NotFoundError } from "./errors.js";
+import { createChirp, getAllChirps, getChirp } from "../db/queries/chirps.js";
 
 export async function handlerCreateChirp(req: Request, res: Response) {
   type parameters ={
@@ -29,4 +29,26 @@ export async function handlerGetAllChirps(req: Request, res: Response) {
   
   res.status(200);
   res.send(JSON.stringify(chirps));
+}
+
+export async function handlerGetChirp(req: Request, res: Response) {
+
+  let id = req.params.id;
+
+  if (id === undefined) {
+    throw new BadRequesError("Id is required");
+  }
+
+  if (Array.isArray(id)) {
+    throw new BadRequesError("Id cannot be an array");
+  }
+
+  const chirp = await getChirp(id);
+
+  if (chirp === null || chirp === undefined) {
+    throw new NotFoundError("Chirp cannot be found by that id.");
+  }
+
+  res.status(200);
+  res.send(JSON.stringify(chirp));
 }
