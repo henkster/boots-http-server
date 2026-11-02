@@ -2,6 +2,7 @@ import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import type { Request } from "express";
 import type { JwtPayload } from "jsonwebtoken";
+import { randomBytes } from "crypto";
 import { AuthenticationError, BadRequestError } from "../api/errors.js";
 
 function hashPassword(password: string): Promise<string> {
@@ -81,6 +82,10 @@ function getBearerToken(req: Request): string {
   return extractBearerToken(authHeader);
 }
 
+function makeRefreshToken() {
+  return randomBytes(32).toString("hex");
+}
+
 export {
   hashPassword,
   checkPasswordHash,
@@ -88,4 +93,5 @@ export {
   validateJWT,
   extractBearerToken,
   getBearerToken,
+  makeRefreshToken,
 }
