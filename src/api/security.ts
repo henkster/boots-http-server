@@ -3,11 +3,16 @@ import { getUser } from "../db/queries/users.js";
 import { AuthenticationError, NotFoundError } from "./errors.js";
 import { checkPasswordHash } from "../security/auth.js";
 import { NewUser } from "../db/schema.js";
+import { makeJWT } from "../security/auth.js"; 
+import { config } from "../config.js";
+
+const defaultExpiration = 3600;
 
 export async function handlerLogin(req: Request, res: Response) {
   type parameters = {
     email: string,
-    password: string
+    password: string,
+    expiresInSeconds?: number,
   }
 
   const params: parameters = req.body;
@@ -23,8 +28,17 @@ export async function handlerLogin(req: Request, res: Response) {
   const userInfo: UserInfo = user;
 
   if (await checkPasswordHash(params.password, user.hashedPassword)) {
+
+    const tokenString = makeJWT(user.id, params.expiresInSeconds ?? defaultExpiration, config.api.secret);
+
     res.status(200);
-    res.send(JSON.stringify(userInfo));
+    res.send(JSON.stringify({
+      id: user.id,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      email: user.email,
+      token: tokenString
+    }));
   }
   else {
     throw new AuthenticationError("incorrect email or password");

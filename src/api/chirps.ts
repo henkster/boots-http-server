@@ -1,21 +1,33 @@
 import type { Request, Response } from "express";
 import { replace_profanity } from "./profanityChecker.js";
-import { BadRequestError, NotFoundError } from "./errors.js";
+import { AuthenticationError, BadRequestError, NotFoundError } from "./errors.js";
 import { createChirp, getAllChirps, getChirp } from "../db/queries/chirps.js";
+import { getBearerToken, validateJWT } from "../security/auth.js";
+import { config } from "../config.js";
 
 export async function handlerCreateChirp(req: Request, res: Response) {
   type parameters ={
     body: string;
-    userId: string;
+    //userId: string;
   }
 
   const params: parameters = req.body;
 
   const maxChirpLength = 140;
 
+  const token = getBearerToken(req);
+
+  const userId = validateJWT(token, config.api.secret);
+
+  console.log("user id:", userId);
+
+  if (!userId) {
+    throw new AuthenticationError();
+  }
+
   if (params.body.length <= maxChirpLength) {
     const cleanedBody = replace_profanity(params.body);
-    const chirp = await createChirp({body: cleanedBody, userId: params.userId});
+    const chirp = await createChirp({body: cleanedBody, userId: userId});
     res.status(201);
     res.send(JSON.stringify(chirp));
   } else {

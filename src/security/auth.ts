@@ -1,5 +1,6 @@
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
+import type { Request } from "express";
 import type { JwtPayload } from "jsonwebtoken";
 import { AuthenticationError, BadRequestError } from "../api/errors.js";
 
@@ -69,10 +70,22 @@ function extractBearerToken(authorization: string | undefined): string {
   return trimmedTokenString;
 }
 
+function getBearerToken(req: Request): string {
+
+  const authHeader = req.get("Authorization");
+
+  if (!authHeader) {
+    throw new AuthenticationError("missing Authorization header");
+  }
+  
+  return extractBearerToken(authHeader);
+}
+
 export {
   hashPassword,
   checkPasswordHash,
   makeJWT,
   validateJWT,
   extractBearerToken,
+  getBearerToken,
 }
