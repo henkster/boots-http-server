@@ -1,9 +1,10 @@
 import type { Request, Response } from "express";
 import { getUser } from "../db/queries/users.js";
 import { AuthenticationError } from "./errors.js";
-import { checkPasswordHash, makeJWT, makeRefreshToken } from "../security/auth.js";
+import { checkPasswordHash, getBearerToken, makeJWT, makeRefreshToken } from "../security/auth.js";
 import { config } from "../config.js";
 import { createRefreshToken } from "../db/queries/refreshTokens.js";
+import { getRefreshToken, updateRefreshToken } from "../db/queries/refreshTokens.js";
 
 const TOKEN_EXPIRATION_SECONDS = 3600;
 const REFRESH_TOKEN_DURATION_DAYS = 60;
@@ -41,4 +42,34 @@ export async function handlerLogin(req: Request, res: Response) {
     token: tokenString,
     refreshToken: refreshToken,
   });
+}
+
+export async function handlerRefreshToken(req: Request, res: Response) {
+  const token = getBearerToken(req);
+
+  const refreshToken = await getRefreshToken(token);
+  
+  const now = new Date(Date.now());
+
+  console.log(refreshToken)
+
+  if (refreshToken === null || refreshToken === undefined || refreshToken.expiresAt <= now || refreshToken.revokedAt !== null || refreshToken.userId === null) {
+    throw new AuthenticationError("refresh token is invalid");
+  }
+
+  const newToken = makeJWT(refreshToken.userId, TOKEN_EXPIRATION_SECONDS, config.api.secret);
+
+  res.status(200).json({ token: newToken });
+}
+
+export async function handlerRevokeToken(req: Request, res: Response) {
+  const token = getBearerToken(req);
+
+  const refreshToken = await getRefreshToken(token);
+
+  if (refreshToken !== null && refreshToken !== undefined && refreshToken.revokedAt === null) {
+    await updateRefreshToken(refreshToken);
+  }
+
+  res.status(204).send();
 }

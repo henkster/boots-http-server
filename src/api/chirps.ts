@@ -19,8 +19,6 @@ export async function handlerCreateChirp(req: Request, res: Response) {
 
   const userId = validateJWT(token, config.api.secret);
 
-  console.log("user id:", userId);
-
   if (!userId) {
     throw new AuthenticationError();
   }
