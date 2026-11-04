@@ -1,10 +1,10 @@
 import type { Request, Response } from "express";
+
+import { config } from "../config.js";
+import { checkPasswordHash, getBearerToken, makeJWT, makeRefreshToken } from "../security/auth.js";
+import { createRefreshToken, getRefreshToken, updateRefreshToken } from "../db/queries/refreshTokens.js";
 import { getUser } from "../db/queries/users.js";
 import { AuthenticationError } from "./errors.js";
-import { checkPasswordHash, getBearerToken, makeJWT, makeRefreshToken } from "../security/auth.js";
-import { config } from "../config.js";
-import { createRefreshToken } from "../db/queries/refreshTokens.js";
-import { getRefreshToken, updateRefreshToken } from "../db/queries/refreshTokens.js";
 
 const TOKEN_EXPIRATION_SECONDS = 3600;
 const REFRESH_TOKEN_DURATION_DAYS = 60;
@@ -53,7 +53,7 @@ export async function handlerRefreshToken(req: Request, res: Response) {
 
   console.log(refreshToken)
 
-  if (refreshToken === null || refreshToken === undefined || refreshToken.expiresAt <= now || refreshToken.revokedAt !== null || refreshToken.userId === null) {
+  if (refreshToken === null || refreshToken === undefined || refreshToken.expiresAt <= now || refreshToken.revokedAt !== null) {
     throw new AuthenticationError("refresh token is invalid");
   }
 
@@ -67,6 +67,7 @@ export async function handlerRevokeToken(req: Request, res: Response) {
 
   const refreshToken = await getRefreshToken(token);
 
+  // TODO consider a different response for "else", depending on if we should be passive or not.
   if (refreshToken !== null && refreshToken !== undefined && refreshToken.revokedAt === null) {
     await updateRefreshToken(refreshToken);
   }

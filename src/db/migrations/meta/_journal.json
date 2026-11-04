@@ -29,6 +29,13 @@
       "when": 1793635045164,
       "tag": "0003_dusty_impossible_man",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793802472412,
+      "tag": "0004_smooth_ender_wiggin",
+      "breakpoints": true
     }
   ]
 }
