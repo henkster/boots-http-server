@@ -80,7 +80,7 @@ export async function handlerDeleteChirp(req: Request, res: Response) {
 
   const chirp = await getChirp(id);
 
-  if (chirp === null) {
+  if (!chirp) {
     throw new NotFoundError("chirp not found");
   }
 
@@ -88,7 +88,11 @@ export async function handlerDeleteChirp(req: Request, res: Response) {
     throw new AuthorizationError();
   }
 
-  await deleteChirp(id);
+  const isDeleted = await deleteChirp(id);
+
+  if (!isDeleted) { // a double-check, albeit redundant
+    throw new NotFoundError("chirp not found");
+  }
 
   res.status(204).send();
 }
