@@ -36,6 +36,27 @@
       "when": 1793802472412,
       "tag": "0004_smooth_ender_wiggin",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793892980243,
+      "tag": "0005_abandoned_clint_barton",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793893330290,
+      "tag": "0006_colossal_blazing_skull",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793893448430,
+      "tag": "0007_melted_franklin_storm",
+      "breakpoints": true
     }
   ]
 }

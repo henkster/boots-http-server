@@ -37,3 +37,15 @@ export async function updateUserEmailAndPassword(userId: string, email: string, 
 
     return result;
 }
+
+export async function upgradeToRed(userId: string) {
+      const [result] = await db
+      .update(users)
+      .set({
+        isChirpyRed: true
+      })
+      .where(eq(users.id, userId))
+      .returning()
+
+    return result;
+}

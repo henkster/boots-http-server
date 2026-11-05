@@ -1,11 +1,30 @@
 import { type Request, type Response } from "express";
 import { createUser, updateUserEmailAndPassword } from "../db/queries/users.js";
+import { User } from "../db/schema.js"
 import { getBearerToken, hashPassword, validateJWT } from "../security/auth.js"
 import { config } from "../config.js";
+
+export type UserResponse = {
+  id: string;
+  email: string;
+  createdAt: Date;
+  updatedAt: Date;
+  isChirpyRed: boolean;
+}
 
 type parameters ={
   email: string;
   password: string;
+}
+
+export function ToUserResponse(user: User): UserResponse {
+  return {
+    id: user.id,
+    email: user.email,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+    isChirpyRed: user.isChirpyRed,
+  };
 }
 
 export async function handlerCreateUser(req: Request, res: Response) {
@@ -21,6 +40,7 @@ export async function handlerCreateUser(req: Request, res: Response) {
     email: user.email,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+    isChirpyRed: user.isChirpyRed,
   }));
 }
 
@@ -36,10 +56,5 @@ export async function handlerUpdateUser(req: Request, res: Response) {
 
   const updatedUser = await updateUserEmailAndPassword(userId, params.email, hashedPassword);
 
-  res.status(200).json({
-    id: updatedUser.id,
-    email: updatedUser.email,
-    createdAt: updatedUser.createdAt,
-    updatedAt: updatedUser.updatedAt,
-  });
+  res.status(200).json(ToUserResponse(updatedUser));
 }

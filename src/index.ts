@@ -7,6 +7,7 @@ import { handlerResetter } from "./api/resetter.js";
 import { handlerCreateChirp, handlerGetAllChirps, handlerGetChirp, handlerDeleteChirp } from "./api/chirps.js";
 import { errorHandler } from "./middleware/errors.js";
 import { handlerCreateUser, handlerUpdateUser } from "./api/users.js";
+import { handlerPolkaWebhooks } from "./api/webhooks.js"
 
 import { config } from "./config.js";
 import postgres from "postgres";
@@ -37,6 +38,7 @@ app.get("/api/chirps/:id", handlerGetChirp);
 app.get("/api/chirps", handlerGetAllChirps);
 app.post("/api/chirps", handlerCreateChirp);
 app.delete("/api/chirps/:id", handlerDeleteChirp);
+app.post("/api/polka/webhooks", handlerPolkaWebhooks);
 
 app.use(errorHandler);
 

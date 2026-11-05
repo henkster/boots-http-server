@@ -5,6 +5,7 @@ import { checkPasswordHash, getBearerToken, makeJWT, makeRefreshToken } from "..
 import { createRefreshToken, getRefreshToken, updateRefreshToken } from "../db/queries/refreshTokens.js";
 import { getUser } from "../db/queries/users.js";
 import { AuthenticationError } from "./errors.js";
+import { ToUserResponse } from "./users.js";
 
 const TOKEN_EXPIRATION_SECONDS = 3600;
 const REFRESH_TOKEN_DURATION_DAYS = 60;
@@ -35,10 +36,7 @@ export async function handlerLogin(req: Request, res: Response) {
   await createRefreshToken({ token: refreshToken, userId: user.id, expiresAt: new Date(Date.now() + REFRESH_TOKEN_DURATION_DAYS * 24 * 60 * 60 * 1000) }) ;
 
   res.status(200).json({
-    id: user.id,
-    createdAt: user.createdAt,
-    updatedAt: user.updatedAt,
-    email: user.email,
+    ...ToUserResponse(user),
     token: tokenString,
     refreshToken: refreshToken,
   });
