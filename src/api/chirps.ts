@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { replace_profanity } from "./profanityChecker.js";
-import { AuthenticationError, BadRequestError, NotFoundError } from "./errors.js";
-import { createChirp, getAllChirps, getChirp } from "../db/queries/chirps.js";
+import { AuthenticationError, AuthorizationError, BadRequestError, NotFoundError } from "./errors.js";
+import { createChirp, deleteChirp, getAllChirps, getChirp } from "../db/queries/chirps.js";
 import { getBearerToken, validateJWT } from "../security/auth.js";
 import { config } from "../config.js";
 
@@ -43,7 +43,7 @@ export async function handlerGetAllChirps(req: Request, res: Response) {
 
 export async function handlerGetChirp(req: Request, res: Response) {
 
-  let id = req.params.id;
+  const id = req.params.id;
 
   if (id === undefined) {
     throw new BadRequestError("Id is required");
@@ -61,4 +61,34 @@ export async function handlerGetChirp(req: Request, res: Response) {
 
   res.status(200);
   res.send(JSON.stringify(chirp));
+}
+
+export async function handlerDeleteChirp(req: Request, res: Response) {
+  const id = req.params.id;
+
+  if (id === undefined) {
+    throw new BadRequestError("Id is required");
+  }
+
+  if (Array.isArray(id)) {
+    throw new BadRequestError("Id cannot be an array");
+  }
+  
+  const token = getBearerToken(req);
+
+  const userId = validateJWT(token, config.api.secret);
+
+  const chirp = await getChirp(id);
+
+  if (chirp === null) {
+    throw new NotFoundError("chirp not found");
+  }
+
+  if (chirp.userId !== userId) {
+    throw new AuthorizationError();
+  }
+
+  await deleteChirp(id);
+
+  res.status(204).send();
 }

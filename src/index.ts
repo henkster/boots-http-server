@@ -4,7 +4,7 @@ import { handlerHitWriter } from "./api/hitWriter.js";
 import { middlewareLogResponses } from "./middleware/logResponses.js";
 import { middlewareHitIncrementer } from "./middleware/hitIncrementer.js";
 import { handlerResetter } from "./api/resetter.js";
-import { handlerCreateChirp, handlerGetAllChirps, handlerGetChirp } from "./api/chirps.js";
+import { handlerCreateChirp, handlerGetAllChirps, handlerGetChirp, handlerDeleteChirp } from "./api/chirps.js";
 import { errorHandler } from "./middleware/errors.js";
 import { handlerCreateUser, handlerUpdateUser } from "./api/users.js";
 
@@ -36,6 +36,7 @@ app.post("/api/revoke", handlerRevokeToken);
 app.get("/api/chirps/:id", handlerGetChirp);
 app.get("/api/chirps", handlerGetAllChirps);
 app.post("/api/chirps", handlerCreateChirp);
+app.delete("/api/chirps/:id", handlerDeleteChirp);
 
 app.use(errorHandler);
 
