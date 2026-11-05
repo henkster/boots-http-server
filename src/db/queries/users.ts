@@ -24,3 +24,16 @@ export async function getUser(email: string) {
   
     return results.length > 0 ? results[0] : undefined;
 }
+
+export async function updateUserEmailAndPassword(userId: string, email: string, hashedPassword: string) {
+    const [result] = await db
+      .update(users)
+      .set({
+        email,
+        hashedPassword
+      })
+      .where(eq(users.id, userId))
+      .returning()
+
+    return result;
+}

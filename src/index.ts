@@ -6,7 +6,7 @@ import { middlewareHitIncrementer } from "./middleware/hitIncrementer.js";
 import { handlerResetter } from "./api/resetter.js";
 import { handlerCreateChirp, handlerGetAllChirps, handlerGetChirp } from "./api/chirps.js";
 import { errorHandler } from "./middleware/errors.js";
-import { handlerCreateUser } from "./api/users.js";
+import { handlerCreateUser, handlerUpdateUser } from "./api/users.js";
 
 import { config } from "./config.js";
 import postgres from "postgres";
@@ -30,6 +30,7 @@ app.get("/admin/metrics", handlerHitWriter);
 app.post("/admin/reset", handlerResetter);
 app.post("/api/login", handlerLogin);
 app.post("/api/users", handlerCreateUser);
+app.put("/api/users", handlerUpdateUser);
 app.post("/api/refresh", handlerRefreshToken);
 app.post("/api/revoke", handlerRevokeToken);
 app.get("/api/chirps/:id", handlerGetChirp);
