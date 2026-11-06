@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { extractBearerToken, makeJWT, validateJWT } from "./auth.js";
+import { extractAPIKey, extractBearerToken, getAPIKey, makeJWT, validateJWT } from "./auth.js";
 import { hashPassword, checkPasswordHash } from "./auth.js";
 import { AuthenticationError, BadRequestError } from "../api/errors.js";
 
@@ -75,5 +75,38 @@ describe("Bearer Extraction", () => {
   it("should return token string despite casing", async () => {
     const result = extractBearerToken("beAReR 123");
     expect(result).toBe("123");
+  });
+});
+
+describe("ApiKey Getter", () => {
+  it("should return simple key string", async () => {
+    const result = extractAPIKey("ApiKey 123");
+    expect(result).toBe("123");
+  });
+
+  it("should throw authentication error on empty string", async () => {
+    expect(() => extractAPIKey("")).toThrow(AuthenticationError);
+  });
+
+  it("should throw authentication error on missing key", async () => {
+    expect(() => extractAPIKey("ApiKey")).toThrow(AuthenticationError);
+  });
+
+  it("should throw authentication error on missing key", async () => {
+    expect(() => extractAPIKey("123")).toThrow(AuthenticationError);
+  });
+
+  it("should return key string despite spaces", async () => {
+    const result = extractAPIKey(" ApiKey    123  ");
+    expect(result).toBe("123");
+  });
+
+  it("should return key string despite casing", async () => {
+    const result = extractAPIKey("aPIkEy 123");
+    expect(result).toBe("123");
+  });
+
+  it("should throw authentication error on missing key", async () => {
+    expect(() => extractAPIKey("ApiKey123")).toThrow(AuthenticationError);
   });
 });

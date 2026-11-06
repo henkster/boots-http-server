@@ -1,6 +1,8 @@
 import type { Request, Response } from "express";
-import { BadRequestError, NotFoundError } from "./errors.js";
+import { AuthenticationError, BadRequestError, NotFoundError } from "./errors.js";
 import { upgradeToRed } from "../db/queries/users.js";
+import { getAPIKey } from "../security/auth.js";
+import { config } from "../config.js";
 
 export async function handlerPolkaWebhooks(req: Request, res: Response) {
   type parameters = {
@@ -10,7 +12,13 @@ export async function handlerPolkaWebhooks(req: Request, res: Response) {
     }
   }
 
-  const params = req.body;
+  const apiKey = getAPIKey(req);
+
+  if (apiKey !== config.api.apiKey) {
+    throw new AuthenticationError("missing API Key")
+  }
+
+  const params: parameters = req.body;
 
   if (params.event !== "user.upgraded") {
     res.sendStatus(204);

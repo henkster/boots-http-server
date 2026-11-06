@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import type { Request } from "express";
 import type { JwtPayload } from "jsonwebtoken";
 import { randomBytes } from "crypto";
-import { AuthenticationError, BadRequestError } from "../api/errors.js";
+import { AuthenticationError, AuthorizationError, BadRequestError } from "../api/errors.js";
 
 function hashPassword(password: string): Promise<string> {
   return argon2.hash(password);
@@ -86,6 +86,34 @@ function makeRefreshToken() {
   return randomBytes(32).toString("hex");
 }
 
+function getAPIKey(req: Request): string {
+  const apiKeyHeaderValue = req.get("Authorization");
+
+  console.log("apiKeyHeaderValue", apiKeyHeaderValue);
+
+  if (!apiKeyHeaderValue) {
+    throw new AuthenticationError("missing API key");
+  }
+  
+  return extractAPIKey(apiKeyHeaderValue);
+}
+
+function extractAPIKey(authorization: string): string {
+  const apiKeyTextIndex = authorization.toLowerCase().indexOf("apikey ");
+
+  if (apiKeyTextIndex === -1) {
+    throw new AuthenticationError();
+  }
+
+  const apiKey = authorization.slice(apiKeyTextIndex + 7).trim();
+
+  if (!apiKey) {
+    throw new AuthenticationError();
+  }
+
+  return apiKey;
+}
+
 export {
   hashPassword,
   checkPasswordHash,
@@ -94,4 +122,6 @@ export {
   extractBearerToken,
   getBearerToken,
   makeRefreshToken,
+  getAPIKey,
+  extractAPIKey,
 }

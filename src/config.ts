@@ -5,6 +5,7 @@ type APIConfig = {
   port: number;
   platform: string;
   secret: string;
+  apiKey: string;
 };
 
 type DbConfig = {
@@ -34,6 +35,7 @@ const apiConfig: APIConfig = {
   port: Number(envOrThrow("PORT")),
   platform: envOrThrow("PLATFORM"),
   secret: envOrThrow("SECRET"),
+  apiKey: envOrThrow("API_KEY"),
 };
 
 const migrationConfig: MigrationConfig = {
