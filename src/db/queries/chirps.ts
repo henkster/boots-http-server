@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { asc, eq, sql } from "drizzle-orm";
 import { db } from "../index.js";
 import { NewChirp, chirps } from "../schema.js";
 
@@ -11,10 +11,11 @@ export async function createChirp(chirp: NewChirp) {
   return result;
 }
 
-export async function getAllChirps() {
+export async function getAllChirps(authorId?: string) {
   return await db
     .select()
     .from(chirps)
+    .where(authorId ? eq(chirps.userId, authorId) : undefined) // NOTE: This expects a happy path; will fail with anything but uuid or falsy.
     .orderBy(asc(chirps.createdAt));
 }
 
