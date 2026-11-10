@@ -4,6 +4,7 @@ import { AuthenticationError, AuthorizationError, BadRequestError, NotFoundError
 import { createChirp, deleteChirp, getAllChirps, getChirp } from "../db/queries/chirps.js";
 import { getBearerToken, validateJWT } from "../security/auth.js";
 import { config } from "../config.js";
+import { Chirp } from "../db/schema.js";
 
 export async function handlerCreateChirp(req: Request, res: Response) {
   type parameters ={
@@ -41,12 +42,27 @@ export async function handlerGetAllChirps(req: Request, res: Response) {
     authorId = authorIdQuery;
   }
 
-  console.log(authorId);
-
   const chirps = await getAllChirps(authorId);
+
+  const sortedChirps = sortChirps(chirps, String(req.query.sort ?? "asc"));
+  /*
+    From Boots chat: 
+    String(undefined)        // "undefined"
+    String("desc")           // "desc"
+    String(["desc", "asc"])  // "desc,asc"  (arrays join with commas)
+    String(["desc"])         // "desc"      (single-element array still works!)
+    String({ foo: "desc" })  // "[object Object]"
+  */
   
   res.status(200);
-  res.send(JSON.stringify(chirps));
+  res.send(JSON.stringify(sortedChirps));
+}
+
+function sortChirps(chirps: Chirp[], direction: string) {
+  if (direction === "desc") {
+    return chirps.toSorted((c1, c2) => c2.createdAt.getTime() - c1.createdAt.getTime());
+  }
+  return chirps.toSorted((c1, c2) => c1.createdAt.getTime() - c2.createdAt.getTime());
 }
 
 export async function handlerGetChirp(req: Request, res: Response) {
